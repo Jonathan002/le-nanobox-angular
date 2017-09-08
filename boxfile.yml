@@ -1,0 +1,34 @@
+run.config:
+  #engine Notes:
+  # - node_modules is moved to root of app
+  # - npm install happens at root so if this config is used, npm install needs to be manually specified for express..
+  engine: nodejs
+
+  # add nginx package
+  extra_packages:
+    - nginx
+  extra_steps:
+    - npm --prefix ./nanobox-express install ./nanobox-express
+
+# add a postgres database
+data.db:
+  image: nanobox/postgresql
+
+
+web.site:
+  start: #start is for deploy only I guess..
+    nginx: nginx -c /app/angular-app/config/nginx-site.conf
+  routes:
+    - '/'
+    - '//'
+
+web.api:
+  #need to specify cwd because npm start is happening upstairs
+  start: #start is for deploy only I guess..
+    nginx: nginx -c /app/nanobox-express/config/nginx-api.conf
+    # node: npm start
+  # cwd: 
+  #   node: nanobox-express
+  routes:
+    - '/api*'
+    - '//api*'
